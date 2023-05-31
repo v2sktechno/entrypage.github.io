@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Data Entry Page</title>
+  <!-- Include Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    .form-group label {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="container mt-5">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="collect-type">Select Collect Type:</label>
+          <select class="form-control" id="collect-type">
+            <option value="service-fee">Service Fee</option>
+            <option value="sustainable-fund">Sustainable Fund</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="year">Select Year:</label>
+          <select class="form-control" id="year"></select>
+        </div>
+        <div class="form-group">
+          <label for="month">Select Month:</label>
+          <select class="form-control" id="month"></select>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>S.No.</th>
+              <th>Station Name</th>
+              <th>CC Name</th>
+              <th>Amount</th>
+              <th>Payment Mode</th>
+              <th>Payment By</th>
+            </tr>
+          </thead>
+          <tbody id="table-body"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <button class="btn btn-primary" onclick="submitForm()">Submit</button>
+        <button class="btn btn-primary" onclick="printPDF()">Print PDF</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Include Bootstrap JS (optional) -->
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js"></script>
+  <script>
+    // Function to populate years dropdown
+    function populateYears() {
+      var yearSelect = document.getElementById("year");
+      var currentYear = new Date().getFullYear();
+      var defaultYear = currentYear;
+
+      for (var i = 2013; i <= currentYear; i++) {
+        var option = document.createElement("option");
+        option.value = i;
+        option.text = i;
+        yearSelect.appendChild(option);
+      }
+
+      yearSelect.value = defaultYear;
+    }
+
+    // Function to populate months dropdown
+    function populateMonths() {
+      var monthSelect = document.getElementById("month");
+      var currentMonth = new Date().getMonth() + 1;
+      var defaultMonth = currentMonth;
+
+      var months = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+      ];
+
+      for (var i = 1; i <= 12; i++) {
+        var option = document.createElement("option");
+        option.value = i;
+        option.text = months[i - 1];
+        monthSelect.appendChild(option);
+      }
+
+      monthSelect.value = defaultMonth;
+    }
+
+    // Function to create payment mode dropdown
+    function createPaymentModeDropdown() {
+      var paymentModes = ["UPI", "NEFT"];
+      var paymentModeDropdown = document.createElement("select");
+      paymentModeDropdown.classList.add("form-control");
+
+      for (var i = 0; i < paymentModes.length; i++) {
+        var option = document.createElement("option");
+        option.value = paymentModes[i];
+        option.text = paymentModes[i];
+        paymentModeDropdown.appendChild(option);
+      }
+
+      return paymentModeDropdown;
+    }
+
+    // Function to create payment by dropdown
+    function createPaymentByDropdown() {
+      var paymentByOptions = ["Staff", "ENT", "CWET"];
+      var paymentByDropdown = document.createElement("select");
+      paymentByDropdown.classList.add("form-control");
+
+      for (var i = 0; i < paymentByOptions.length; i++) {
+        var option = document.createElement("option");
+        option.value = paymentByOptions[i];
+        option.text = paymentByOptions[i];
+        paymentByDropdown.appendChild(option);
+      }
+
+      return paymentByDropdown;
+    }
+
+    // Function to store the amount entered by the user
+    function storeAmount(input) {
+      var amount = input.value;
+      // You can store the amount or perform any other logic here
+    }
+
+    // Function to populate the table with data
+    function populateTable() {
+      var data = [
+  {
+    "sno": "1",
+    "station": "Nizampally",
+    "ccname": "MARI -Vijayalaxmi",
+    "amount": "100",
+    "paymentmode": "upi",
+    "paymentby": "staff"
+  },
+  {
+    "sno": "2",
+    "station": "Pochampally",
+    "ccname": "MARI -Vijayalaxmi",
+    "amount": "200",
+    "paymentmode": "neft",
+    "paymentby": "ent"
+  },
+  {
+    "sno": "3",
+    "station": "Gorikothapally",
+    "ccname": "MARI -Vijayalaxmi",
+    "amount": "300",
+    "paymentmode": "upi",
+    "paymentby": "cwet"
+  },
+  {
+    "sno": "4",
+    "station": "Rangapuram",
+    "ccname": "MARI -Vijayalaxmi",
+    "amount": "400",
+    "paymentmode": "upi",
+    "paymentby": "staff"
+  },
+  {
+    "sno": "5",
+    "station": "Jookal",
+    "ccname": "MARI -Vijayalaxmi",
+    "amount": "500",
+    "paymentmode": "neft",
+    "paymentby": "ent"
+  },
+  {
+    "sno": "6",
+    "station": "Kothapally-SM",
+    "ccname": "MARI -Vijayalaxmi",
+    "amount": "600",
+    "paymentmode": "upi",
+    "paymentby": "cwet"
+  },
+  {
+    "sno": "7",
+    "station": "Gurrampet",
+    "ccname": "MARI -Vijayalaxmi",
+    "amount": "700",
+    "paymentmode": "upi",
+    "paymentby": "staff"
+  },
+  {
+    "sno": "8",
+    "station": "Katapuram",
+    "ccname": "MARI -Vijayalaxmi",
+    "amount": "800",
+    "paymentmode": "neft",
+    "paymentby": "ent"
+  },
+  {
+    "sno": "9",
+    "station": "Issipet",
+    "ccname": "MARI -Vijayalaxmi",
+    "amount": "900",
+    "paymentmode": "upi",
+    "paymentby": "cwet"
+  },
+  {
+    "sno": "10",
+    "station": "Bhupalpally-I",
+    "ccname": "MARI -Vijayalaxmi",
+    "amount": "1000",
+    "paymentmode": "upi",
+    "paymentby": "staff"
+  }
+];
+
+
+      var tableBody = document.getElementById("table-body");
+
+      for (var i = 0; i < data.length; i++) {
+        var row = document.createElement("tr");
+
+        var snoCell = document.createElement("td");
+        snoCell.textContent = data[i].sno;
+        row.appendChild(snoCell);
+
+        var stationCell = document.createElement("td");
+        stationCell.textContent = data[i].station;
+        row.appendChild(stationCell);
+
+        var ccnameCell = document.createElement("td");
+        ccnameCell.textContent = data[i].ccname;
+        row.appendChild(ccnameCell);
+
+        var amountCell = document.createElement("td");
+        var amountInput = document.createElement("input");
+        amountInput.type = "text";
+        amountInput.classList.add("form-control");
+        amountInput.setAttribute("placeholder", "Enter amount");
+        amountInput.setAttribute("oninput", "storeAmount(this)");
+        amountCell.appendChild(amountInput);
+        row.appendChild(amountCell);
+
+        var paymentModeCell = document.createElement("td");
+        var paymentModeDropdown = createPaymentModeDropdown();
+        paymentModeDropdown.value = data[i].paymentmode;
+        paymentModeCell.appendChild(paymentModeDropdown);
+        row.appendChild(paymentModeCell);
+
+        var paymentByCell = document.createElement("td");
+        var paymentByDropdown = createPaymentByDropdown();
+        paymentByDropdown.value = data[i].paymentby;
+        paymentByCell.appendChild(paymentByDropdown);
+        row.appendChild(paymentByCell);
+
+        tableBody.appendChild(row);
+      }
+    }
+
+    // Function to submit the form
+    function submitForm() {
+      var collectType = document.getElementById("collect-type").value;
+      var year = document.getElementById("year").value;
+      var month = document.getElementById("month").value;
+
+      // Perform any desired operations with the form data
+      console.log("Collect Type:", collectType);
+      console.log("Year:", year);
+      console.log("Month:", month);
+
+      var tableRows = document.querySelectorAll("#table-body tr");
+
+      tableRows.forEach(function(row) {
+        var cells = row.querySelectorAll("td");
+
+        var sno = cells[0].textContent;
+        var station = cells[1].textContent;
+        var ccname = cells[2].textContent;
+        var amount = cells[3].querySelector("input").value;
+        var paymentMode = cells[4].querySelector("select").value;
+        var paymentBy = cells[5].querySelector("select").value;
+
+        console.log("Row Data:");
+        console.log("S.No.:", sno);
+        console.log("Station Name:", station);
+        console.log("CC Name:", ccname);
+        console.log("Amount:", amount);
+        console.log("Payment Mode:", paymentMode);
+        console.log("Payment By:", paymentBy);
+      });
+    }
+
+    // Function to print the form as PDF
+    function printPDF() {
+      var doc = new jsPDF();
+
+      doc.text("Form Data", 10, 10);
+
+      var collectType = document.getElementById("collect-type").value;
+      var year = document.getElementById("year").value;
+      var month = document.getElementById("month").value;
+
+      doc.text("Collect Type: " + collectType, 10, 20);
+      doc.text("Year: " + year, 10, 30);
+      doc.text("Month: " + month, 10, 40);
+
+      var tableRows = document.querySelectorAll("#table-body tr");
+      var rowData = "";
+
+      tableRows.forEach(function(row, index) {
+        var cells = row.querySelectorAll("td");
+
+        var sno = cells[0].textContent;
+        var station = cells[1].textContent;
+        var ccname = cells[2].textContent;
+        var amount = cells[3].querySelector("input").value;
+        var paymentMode = cells[4].querySelector("select").value;
+        var paymentBy = cells[5].querySelector("select").value;
+
+        rowData += "Row " + (index + 1) + ":\n";
+        rowData += "S.No.: " + sno + "\n";
+        rowData += "Station Name: " + station + "\n";
+        rowData += "CC Name: " + ccname + "\n";
+        rowData += "Amount: " + amount + "\n";
+        rowData += "Payment Mode: " + paymentMode + "\n";
+        rowData += "Payment By: " + paymentBy + "\n\n";
+      });
+
+      doc.text(rowData, 10, 50);
+
+      doc.save("form.pdf");
+    }
+
+    // Call the functions to populate the dropdowns and table
+    populateYears();
+    populateMonths();
+    populateTable();
+  </script>
+</body>
+</html>
